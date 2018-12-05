@@ -23,7 +23,7 @@ export default function promiseMiddleware(config = {}) {
       }
 
       // Deconstruct the properties of the original action object to constants
-      const { type, payload, meta } = action;
+      const { type, payload, meta, ...extraParams } = action;
 
       // Assign values for promise type suffixes
       const [
@@ -41,6 +41,7 @@ export default function promiseMiddleware(config = {}) {
        */
       const getAction = (newPayload, isRejected) => ({
         type: `${type}_${isRejected ? REJECTED : FULFILLED}`,
+        ...extraParams,
         ...newPayload ? {
           payload: newPayload
         } : {},
@@ -74,6 +75,7 @@ export default function promiseMiddleware(config = {}) {
        */
       next({
         type: `${type}_${PENDING}`,
+        ...extraParams,
         ...!!data ? { payload: data } : {},
         ...!!meta ? { meta } : {}
       });

@@ -21,25 +21,30 @@ describe('Redux Promise Middleware:', () => {
   const optimisticUpdateData = { foo: true };
   const metaData = { bar: true };
   const lastMiddlewareData = { baz: true };
+  const extraParams = 'here is a extra parameter';
 
   const defaultPromiseAction = {
     type: 'ACTION',
+    extraParams,
     payload: {
       promise: Promise.resolve(promiseValue)
     }
   };
 
   const defaultPendingAction = {
-    type: `${defaultPromiseAction.type}_PENDING`
+    type: `${defaultPromiseAction.type}_PENDING`,
+    extraParams: 'here is a extra parameter'
   };
 
   const defaultFulfilledAction = {
     type: `${defaultPromiseAction.type}_FULFILLED`,
+    extraParams,
     payload: promiseValue
   };
 
   const defaultRejectedAction = {
     type: `${defaultPromiseAction.type}_REJECTED`,
+    extraParams,
     error: true,
     payload: promiseReason
   };
@@ -144,6 +149,7 @@ describe('Redux Promise Middleware:', () => {
     it('dispatches a pending action for implicit promise payload', () => {
       store.dispatch({
         type: promiseAction.type,
+        extraParams,
         payload: promiseAction.payload.promise
       });
 
@@ -211,6 +217,7 @@ describe('Redux Promise Middleware:', () => {
     beforeEach(() => {
       promiseAction = {
         type: defaultPromiseAction.type,
+        extraParams,
         payload: Promise.resolve(promiseValue)
       };
 
@@ -220,6 +227,7 @@ describe('Redux Promise Middleware:', () => {
     context('When resolve reason is null:', () => {
       const nullResolveAction = {
         type: defaultPromiseAction.type,
+        extraParams,
         payload: Promise.resolve(null)
       };
 
@@ -228,7 +236,8 @@ describe('Redux Promise Middleware:', () => {
 
         await actionDispatched.then(({ value, action }) => {
           expect(action).to.eql({
-            type: `${nullResolveAction.type}_FULFILLED`
+            type: `${nullResolveAction.type}_FULFILLED`,
+            extraParams,
           });
         });
       });
@@ -267,6 +276,7 @@ describe('Redux Promise Middleware:', () => {
     it('returns value and action as parameters to `then()`', async () => {
       const actionDispatched = store.dispatch({
         type: defaultPromiseAction.type,
+        extraParams,
         payload: Promise.resolve(promiseValue)
       });
 
@@ -283,6 +293,7 @@ describe('Redux Promise Middleware:', () => {
 
       fulfilledAction = {
         type: `${promiseAction.type}_${customPrefix}`,
+        extraParams,
         payload: promiseValue
       };
 
@@ -299,6 +310,7 @@ describe('Redux Promise Middleware:', () => {
     beforeEach(() => {
       promiseAction = {
         type: defaultPromiseAction.type,
+        extraParams,
         payload: Promise.reject(promiseReason)
       };
 
@@ -401,6 +413,7 @@ describe('Redux Promise Middleware:', () => {
 
       rejectedAction = {
         type: `${promiseAction.type}_${customPrefix}`,
+        extraParams,
         error: rejectedAction.error,
         payload: promiseReason
       };
